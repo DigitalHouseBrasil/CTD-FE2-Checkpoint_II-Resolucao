@@ -1,12 +1,9 @@
-/* 
-!!!! Fazer apenas as tarefas pendentes com eles em aula...
-*/
 let tarefasTerminadasUl = document.querySelector(".tarefas-terminadas");
 
 function renderizaTarefasConcluidas(tarefaRecebida) {
     let liTarefaTerminada = document.createElement('li');
     liTarefaTerminada.classList.add("tarefa");
-    //liTarefaPendente.setAttribute('class', 'tarefa'); //Também é possível
+    //liTarefaPendente.setAttribute('class', 'tarefa'); //Outra forma de setar uma classe em um elemento
 
     liTarefaTerminada.innerHTML =
         `
@@ -24,9 +21,11 @@ function renderizaTarefasConcluidas(tarefaRecebida) {
 }
 
 //Captura toda a lista e verifica qual foi o elemento clicado (com o target)
+//Também é possível fazer com vento de click no "onclick"
 tarefasTerminadasUl.addEventListener('click', function (tarefaClicada) {
     tarefaClicada.preventDefault(); //Impede de atualizar a pagina
-    let targetTarefa = tarefaClicada.target;
+
+    let targetTarefa = tarefaClicada.target; //Captura o alvo (item que foi clicado na tela)
     let cookieJwt = getCookie("jwt");
 
     //Trocar o status da atividade para "pendente"

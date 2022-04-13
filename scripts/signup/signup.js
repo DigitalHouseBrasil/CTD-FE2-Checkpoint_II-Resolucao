@@ -1,5 +1,3 @@
-/* Variáveis globais ao escopo do JS */
-
 //Captura as entradas de dados e ações do usuário na página de cadastro
 let campoNomeCadastro = document.getElementById("inputNomeCadastro");
 let campoSobrenomeCadastro = document.getElementById("inputSobrenomeCadastro");
@@ -19,9 +17,13 @@ const usuarioObjetoCadastro = {
 botaoCriarConta.addEventListener('click', evento => {
     evento.preventDefault();
 
-    //Faz as normalizações e validações
+    /* 
+    NOTA:
+    - Não foram realizadas normalizações e validações completas neste projeto modelo
+        - Porém, os alunos devem realizar estas ações antes de salvar um novo usuário de acordo com a descrição do 2° checkpoint
+    */
 
-    //Verifica se todos os campos estão preenchidos
+    //Verifica se todos os campos estão preenchidos (Validação básica)
     if (campoNomeCadastro.value != "" && campoSenhaCadastro.value != "" &&
         campoEmailCadastro.value != "" && campoSenhaCadastro.value != "" &&
         campoRepetirSenhaCadastro.value != "") {
@@ -32,6 +34,7 @@ botaoCriarConta.addEventListener('click', evento => {
         usuarioObjetoCadastro.email = campoEmailCadastro.value;
         usuarioObjetoCadastro.password = campoSenhaCadastro.value;
 
+        //Converte de JS para JSON String
         let objetoUsuarioCadastroJson = JSON.stringify(usuarioObjetoCadastro);
 
         let configuracaoRequisicao = {
@@ -46,7 +49,6 @@ botaoCriarConta.addEventListener('click', evento => {
         mostrarSpinner();
 
         setTimeout(() => {
-
             //Chamando a API
             fetch("https://ctd-todo-api.herokuapp.com/v1/users", configuracaoRequisicao)
                 .then((response) => {
@@ -56,7 +58,6 @@ botaoCriarConta.addEventListener('click', evento => {
                     /* Se o código for diferente de sucesso (201), lança um throw para que a execução caia no Catch() */
                     throw response;
                 }).then(function (resposta) {
-
                     cadastroSucesso(resposta.jwt)
                 })
                 .catch(error => {

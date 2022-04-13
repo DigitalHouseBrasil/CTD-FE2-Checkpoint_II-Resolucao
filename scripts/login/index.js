@@ -1,12 +1,8 @@
-/* Variáveis globais ao escopo do JS */
-
 //Captura as entradas de dados e ações do usuário na página de login
 let campoEmailLogin = document.getElementById("inputEmail");
 let campoSenhaLogin = document.getElementById("inputPassword");
 let botaoAcessarLogin = document.getElementById("botaoAcessar");
 let formularioLogin = document.getElementById("formularioLogin");
-
-
 
 // Variáveis que serão normalizadas
 let campoEmailLoginNormalizado;
@@ -22,17 +18,16 @@ let senhaValidacoesOk = false;
 //API
 let loginApiValidacao = true;
 
-//Não posso mudar as propriedades, mas os valores de cada propriedade sim;
 const loginUsuario = {
   email: "",
   password: "",
 };
 
-//Ao clicar no botão, executa
+//Ao clicar no botão, executa...
 botaoAcessarLogin.addEventListener("click", function (evento) {
+  
   //Verifica se ambos os campos estão preenchidos, normalizados e validados
   if (validaTelaDeLogin()) {
-    /* Se não impedir de atualizar, não da tempo de exibir a requisição... */
     evento.preventDefault();
 
     //NORMALIZAÇÃO
@@ -57,7 +52,6 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
     loginUsuario.password = campoSenhaLoginNormalizado;
     //console.log(loginUsuario);
 
-    //Salva o objeto no Storage
     let loginUsuarioEmJson = JSON.stringify(loginUsuario);
 
     let configuracoesRequisicao = {
@@ -67,9 +61,10 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
         'Content-type': 'application/json',
       },
     }
-
+    //Habilita o spinner antes de fazer a requisição
     mostrarSpinner();
 
+    //Timeout demonstra uma requisição mais demorada
     setTimeout(() => {
       //@@ Utilizando Promisses
       //Chamando a API
@@ -86,7 +81,6 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
         .catch(error => {
           loginErro(error.status)
         });
-
 
     }, 2000);
 
@@ -109,16 +103,16 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
 
     //  Ao obter o sucesso, recebe o json (token) do usuário
     function loginSucesso(jwtRecebido) {
-      /* console.log("Jwt recebido");
-      console.log(jwtRecebido); */
+      console.log("Jwt recebido");
+      console.log(jwtRecebido);
 
       //@@@ Após obter o jwt, salva no localStorage ou SessionStorage
       //sessionStorage.setItem("jwt", jwtRecebido);
 
-      //@@ Setando Cookies
+      //@@ Setando o token usandio Cookies
       document.cookie = `jwt=${jwtRecebido}`;
 
-
+      //Desabilita o Spinner após sucesso no login
       ocultarSpinner();
 
       //@@Direciona o usuário para a tela de tarefas após sucesso ao logar
@@ -145,7 +139,6 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
         loginApiValidacao = true;
       }
       validaTelaDeLogin();
-
       /* switch (statusRecebido) {
         case 400:
           console.log("Senha incorreta");
@@ -183,7 +176,6 @@ campoEmailLogin.addEventListener("blur", function () {
 
   elementoSmallErro(inputEmailValidacao);
 
-  //Primeiro faz a validação simples de campo vazio
   let emailEValido = validaEmailRecebido(campoEmailLogin.value);
 
   //Se o e-mail não for válido e o campo não for vazio, depois essa mais complexa
@@ -221,11 +213,9 @@ campoSenhaLogin.addEventListener("blur", function () {
     campoSenhaLogin.style.border = ``;
     senhaValidacoesOk = true;
   }
-
   resetaValidacaoLoginErro();
   validaTelaDeLogin();
 });
-
 
 function validaTelaDeLogin() {
   //Se ambos algum dos campos não forem válido

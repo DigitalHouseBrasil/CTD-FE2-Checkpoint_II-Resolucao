@@ -1,14 +1,13 @@
 let tarefasPendentesUl = document.querySelector(".tarefas-pendentes");
 
-
 function renderizaTarefasPendentes(tarefaRecebida) {
 
-    //Converte a data de TimeStamp Americadno, para Data na formatação PT-BR
+    //Converte a data de TimeStamp Americano, para Date na formatação PT-BR
     var dataTarefa = new Date(tarefaRecebida.createdAt).toLocaleDateString("pt-BR")
  
     let liTarefaPendente = document.createElement('li');
     liTarefaPendente.classList.add("tarefa");
-    //liTarefaPendente.setAttribute('class', 'tarefa'); //Também é possível
+    //liTarefaPendente.setAttribute('class', 'tarefa'); //Outra maneira de setar a classe
 
 
     //Utilizando o "onclick"
@@ -25,7 +24,7 @@ function renderizaTarefasPendentes(tarefaRecebida) {
     //Adiciona a lista principal
     tarefasPendentesUl.appendChild(liTarefaPendente);
 }
-
+/* Função utilizada quando se opta pr usar o 'onclick' ao invez da captura pelo 'target' */
 function moverTarefaParaTerminada(idTarefa) {
     let escolhaUsuario = confirm("Deseja realmente mover esta tarefa para as 'Tarefas Terminadas' ?");
     if (escolhaUsuario) {
@@ -51,7 +50,7 @@ tarefasPendentesUl.addEventListener('click', function (tarefaClicada) {
     }
 });
 
-//Card que simboliza nenhuma tarefa pendente cadastrada na API
+//Card que simboliza quando nenhuma tarefa foi encontrada na API
 function nenhumaTarefaPendenteEncontrada() {
     let liTarefaPendente = document.createElement('li');
     liTarefaPendente.classList.add("tarefa");
@@ -59,11 +58,9 @@ function nenhumaTarefaPendenteEncontrada() {
     liTarefaPendente.innerHTML =
         `
         <div class="descricao">
-            <p class="nome">Você ainda não possui nenhuma tarefa cadastrada em nosso sistema</p>
+            <p class="nome">Você ainda não possui nenhuma tarefa cadastrada no sistema</p>
         </div
     `
     //Adiciona a lista principal
     tarefasPendentesUl.appendChild(liTarefaPendente);
 }
-
-

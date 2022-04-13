@@ -1,3 +1,4 @@
+//@@@ Normalizações dos dados
 function retiraEspacosDeUmValorInformado(valorRecebido) {
   return valorRecebido.trim();
 }
@@ -6,6 +7,7 @@ function converteValorRecebidoParaMinusculo(valorRecebido) {
   return valorRecebido.toLowerCase();
 }
 
+//@@@ Validação de email com formato válido usando RegExp (Expressões regulares)
 function validaEmailRecebido(emailRecebido) {
   if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailRecebido)) {
     return true;
@@ -14,16 +16,14 @@ function validaEmailRecebido(emailRecebido) {
   }
 }
 
-
 function elementoSmallErro(elementoRecebido) {
-  //elementoRecebido = document.getElementById(`${elementoRecebido}`);
   elementoRecebido.style.color = "#E42323BF";
   elementoRecebido.style.fontSize = "8";
   elementoRecebido.style.fontWeight = "bold";
 }
 
 //Função que pega o Cookie do navegador
-// https://www.w3schools.com/js/js_cookies.asp
+// Retirado de: https://www.w3schools.com/js/js_cookies.asp
 function getCookie(cname) {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
@@ -39,4 +39,3 @@ function getCookie(cname) {
   }
   return "";
 }
-

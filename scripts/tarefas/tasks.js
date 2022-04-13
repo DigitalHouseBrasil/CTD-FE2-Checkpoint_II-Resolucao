@@ -1,10 +1,11 @@
-
 let cookieJwt;
+
 ///@@@@@@ Executa automaticamente ao iniciar a página
 onload = () => {
     cookieJwt = getCookie("jwt");
-    //Simula uma validação se o usuário não estiver autenticado e autorizado
-    if (cookieJwt == "" || cookieJwt == null || cookieJwt == undefined) {
+
+    //Simula uma validação de rota se o usuário não estiver autenticado e autorizado (ou seja, se são possui um token salvo)
+    if (!cookieJwt) {
         alert("Você não tem permissão para usar esta página!\nVoltando para a tela de login...");
         window.location = "index.html"
     } else {
@@ -60,8 +61,6 @@ function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
             'Authorization': `${tokenJwtArmazenado}`, // é OBRIGATORIO passar essa informação
         },
     };
-
-
     fetch(urlGetTarefas, configuracaoRequisicao).then(
         resultado => {
             if (resultado.status == 200) {
@@ -82,30 +81,61 @@ function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
 
 function manipulandoTarefasUsuario(listaDeTarefas) {
 
-    if (listaDeTarefas.length != 0) {
+    //Verifica se o array retornou vazio [] da chamada na API
+    if (listaDeTarefas.length != 0) { //caso são seja vazio....
 
+        /* Criar 2 listas para separa as tarefas entre termiandas e completas (Utilizado pela animação do Sketelon) */
         let listaTarefasPendentes = listaDeTarefas.filter(elemento => !elemento.completed)
         let listaTarefasCompletas = listaDeTarefas.filter(elemento => elemento.completed)
 
+        //Inicia a animação dos skeletons em ambas as listas
         renderizarSkeletons(listaTarefasPendentes.length, ".tarefas-pendentes");
         renderizarSkeletons(listaTarefasCompletas.length, ".tarefas-terminadas");
 
+        /* NOTA:
+            - Timeout é utilizado aqui para demonstrar a animação de forma mais eficiente, pois o tempo de retorno da requisição é quase instantaneo.
+         */
         setTimeout(() => {
 
-            //Ordenando a lista recebida da API
-            listaDeTarefas = listaDeTarefas.sort(function (a, b) {
+            //Ordenando a lista de tarefas pendentes (A - Z)
+            listaTarefasPendentes = listaTarefasPendentes.sort(function (a, b) {
                 return a.description.localeCompare(b.description);
             });
 
-
-            listaDeTarefas.map(tarefa => {
-                if (tarefa.completed) {
-                    renderizaTarefasConcluidas(tarefa);
-                } else {
-                    renderizaTarefasPendentes(tarefa);
-                }
+            //Ordenando a lista de tarefas completas (A - Z)
+            listaTarefasCompletas = listaTarefasCompletas.sort(function (a, b) {
+                return a.description.localeCompare(b.description);
             });
 
+            //Percorre a lista de tarefas pendentes (já ordenada) e as exibe em tela
+            listaTarefasPendentes.map(tarefa => {
+                renderizaTarefasPendentes(tarefa);
+            });
+
+            //Percorre a lista de tarefas terminadas (já ordenada) e as exibe em tela
+            listaTarefasCompletas.map(tarefa => {
+                renderizaTarefasConcluidas(tarefa);
+            });
+
+            /*  
+                NOTA:
+                    - Outra maneira de realizar a renderização, 
+                    utilizando a lista única retornada pela API que contem ambos os status
+                    
+            //Ordenando a lista recebida da API
+             listaDeTarefas = listaDeTarefas.sort(function (a, b) {
+                 return a.description.localeCompare(b.description);
+             });
+ 
+             listaDeTarefas.map(tarefa => {
+                 if (tarefa.completed) {
+                     renderizaTarefasConcluidas(tarefa);
+                 } else {
+                     renderizaTarefasPendentes(tarefa);
+                 }
+             }); */
+
+            //Remove as animações do skeleton em ambas as listas
             removerSkeleton(".tarefas-pendentes");
             removerSkeleton(".tarefas-terminadas");
 
@@ -120,7 +150,7 @@ function manipulandoTarefasUsuario(listaDeTarefas) {
 let botaoCadastrar = document.getElementById("botaoTarefas");
 
 botaoCadastrar.addEventListener('click', evento => {
-    evento.preventDefault(); //Impede que a página atualize automaticamente e não faça o envio da request
+    evento.preventDefault();
 
     let descricaoTarefa = document.getElementById('novaTarefa');
     let radioGrupo = document.getElementsByName('grupoRadio');
@@ -165,7 +195,7 @@ botaoCadastrar.addEventListener('click', evento => {
                 window.location.reload();
             })
             .catch(error => {
-                loginErro(error)
+                console.log(error)
             });
     } else {
         evento.preventDefault();
@@ -205,7 +235,7 @@ function atualizaTarefa(idTarefa, status, tokenJwt) {
             window.location.reload();
         })
         .catch(error => {
-            loginErro(error)
+            console.log(error)
         });
 }
 
@@ -241,7 +271,7 @@ function deletarTarefa(idTarefa, tokenJwt) {
 function encerrarSessao() {
     let escolhaUsuario = confirm("Deseja realmente finalizar a sessão e voltar para o login ?");
     if (escolhaUsuario) {
-        //Setar uma data anterior, remove(deleta) o cookie do navegador
+        //Setar uma data anterior a atual, remove(deleta) o cookie do navegador
         document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         //Direciona para a tela de login
         window.location = "index.html"
