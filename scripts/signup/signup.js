@@ -42,20 +42,29 @@ botaoCriarConta.addEventListener('click', evento => {
             },
         };
 
-        //Chamando a API
-        fetch("https://ctd-todo-api.herokuapp.com/v1/users", configuracaoRequisicao)
-            .then((response) => {
-                if (response.status == 201) {
-                    return response.json()
-                }
-                /* Se o código for diferente de sucesso (201), lança um throw para que a execução caia no Catch() */
-                throw response;
-            }).then(function (resposta) {
-                cadastroSucesso(resposta.jwt)
-            })
-            .catch(error => {
-                cadastroErro(error)
-            });
+        //Habilita o Spinner na página
+        mostrarSpinner();
+
+        setTimeout(() => {
+
+            //Chamando a API
+            fetch("https://ctd-todo-api.herokuapp.com/v1/users", configuracaoRequisicao)
+                .then((response) => {
+                    if (response.status == 201) {
+                        return response.json()
+                    }
+                    /* Se o código for diferente de sucesso (201), lança um throw para que a execução caia no Catch() */
+                    throw response;
+                }).then(function (resposta) {
+
+                    cadastroSucesso(resposta.jwt)
+                })
+                .catch(error => {
+                    cadastroErro(error)
+                });
+
+        }, 2000);
+
     } else {
         alert("Todos os campos devem ser preenchidos para que possa prosseguir")
     }
@@ -65,6 +74,10 @@ botaoCriarConta.addEventListener('click', evento => {
 function cadastroSucesso(jsonRecebido) {
     console.log("Json recebido ao cadastrar");
     console.log(jsonRecebido);
+
+    //Desabilita o Spinner
+    ocultarSpinner();
+
     alert("Usuário cadastrado com sucesso")
     window.location = "index.html"
 }
@@ -72,4 +85,7 @@ function cadastroSucesso(jsonRecebido) {
 function cadastroErro(statusRecebido) {
     console.log("Erro ao cadastrar");
     console.log(statusRecebido);
+
+    //Desabilita o Spinner
+    ocultarSpinner();
 }

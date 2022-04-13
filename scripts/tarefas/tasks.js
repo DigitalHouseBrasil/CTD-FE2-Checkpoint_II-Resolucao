@@ -61,6 +61,7 @@ function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
         },
     };
 
+
     fetch(urlGetTarefas, configuracaoRequisicao).then(
         resultado => {
             if (resultado.status == 200) {
@@ -80,35 +81,39 @@ function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
 }
 
 function manipulandoTarefasUsuario(listaDeTarefas) {
-    //Formas de percorrer a lista obtida
-    /* for (let tarefa of listaDeTarefas) {
-        //console.log(tarefa);   
-    }
-    listaDeTarefas.forEach(tarefa => {
-        console.log(tarefa);
-    }); */
-    //console.log(listaDeTarefas);
 
-    //Se a lista de tarefas retornar vazia da api...
-    if (listaDeTarefas.length == 0) {
-        nenhumaTarefaPendenteEncontrada();
-    //Se retornar algum registro da API...
+    if (listaDeTarefas.length != 0) {
+
+        let listaTarefasPendentes = listaDeTarefas.filter(elemento => !elemento.completed)
+        let listaTarefasCompletas = listaDeTarefas.filter(elemento => elemento.completed)
+
+        renderizarSkeletons(listaTarefasPendentes.length, ".tarefas-pendentes");
+        renderizarSkeletons(listaTarefasCompletas.length, ".tarefas-terminadas");
+
+        setTimeout(() => {
+
+            //Ordenando a lista recebida da API
+            listaDeTarefas = listaDeTarefas.sort(function (a, b) {
+                return a.description.localeCompare(b.description);
+            });
+
+
+            listaDeTarefas.map(tarefa => {
+                if (tarefa.completed) {
+                    renderizaTarefasConcluidas(tarefa);
+                } else {
+                    renderizaTarefasPendentes(tarefa);
+                }
+            });
+
+            removerSkeleton(".tarefas-pendentes");
+            removerSkeleton(".tarefas-terminadas");
+
+        }, 2000);
+
     } else {
-        //Ordenando a lista recebida da API
-        listaDeTarefas = listaDeTarefas.sort(function (a, b) {
-            return a.description.localeCompare(b.description);
-        });
-
-        listaDeTarefas.map(tarefa => {
-            if (tarefa.completed) {
-                renderizaTarefasConcluidas(tarefa);
-            } else {
-                renderizaTarefasPendentes(tarefa);
-            }
-        });
-
+        nenhumaTarefaPendenteEncontrada();
     }
-
 }
 
 ///@@@@@@ CADASTRANDO UMA NOVA TAREFA PARA O USUÁRIO LOGADO

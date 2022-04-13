@@ -68,38 +68,44 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
       },
     }
 
-    //@@ Utilizando Promisses
-    //Chamando a API
-    fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicao)
-      .then((response) => {
-        if (response.status == 201) {
-          return response.json()
-        }
-        // Se o código for diferente de sucesso (201), lança um throw para que a execução caia no Catch() 
-        throw response;
-      }).then(function (resposta) {
-        loginSucesso(resposta.jwt)
-      })
-      .catch(error => {
-        loginErro(error.status)
-      });
+    mostrarSpinner();
+
+    setTimeout(() => {
+      //@@ Utilizando Promisses
+      //Chamando a API
+      fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicao)
+        .then((response) => {
+          if (response.status == 201) {
+            return response.json()
+          }
+          // Se o código for diferente de sucesso (201), lança um throw para que a execução caia no Catch() 
+          throw response;
+        }).then(function (resposta) {
+          loginSucesso(resposta.jwt)
+        })
+        .catch(error => {
+          loginErro(error.status)
+        });
+
+
+    }, 2000);
 
     //@@ Utilizando Async/Await
     //loginApi(configuracoesRequisicao);
 
     //@@ Utilizando Async/Await
-   /*  async function loginApi(configuracoesRequisicaoRecebidas) {
-
-      try {
-        let respostaApi = await fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicaoRecebidas);
-        let respostaJson = await respostaApi.json();
-        console.log(respostaJson);
-
-      } catch (error) {
-        console.log(error);
-      }
-
-    } */
+    /*  async function loginApi(configuracoesRequisicaoRecebidas) {
+ 
+       try {
+         let respostaApi = await fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicaoRecebidas);
+         let respostaJson = await respostaApi.json();
+         console.log(respostaJson);
+ 
+       } catch (error) {
+         console.log(error);
+       }
+ 
+     } */
 
     //  Ao obter o sucesso, recebe o json (token) do usuário
     function loginSucesso(jwtRecebido) {
@@ -112,11 +118,17 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
       //@@ Setando Cookies
       document.cookie = `jwt=${jwtRecebido}`;
 
+
+      ocultarSpinner();
+
       //@@Direciona o usuário para a tela de tarefas após sucesso ao logar
       window.location.href = "tarefas.html"
     }
 
     function loginErro(statusRecebido) {
+
+      ocultarSpinner();
+
       let loginValidacao = document.getElementById("loginValidacao");
       elementoSmallErro(loginValidacao);
 

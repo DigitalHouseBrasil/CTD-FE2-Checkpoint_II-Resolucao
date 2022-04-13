@@ -1,5 +1,6 @@
 let tarefasPendentesUl = document.querySelector(".tarefas-pendentes");
 
+
 function renderizaTarefasPendentes(tarefaRecebida) {
 
     //Converte a data de TimeStamp Americadno, para Data na formatação PT-BR
@@ -9,6 +10,9 @@ function renderizaTarefasPendentes(tarefaRecebida) {
     liTarefaPendente.classList.add("tarefa");
     //liTarefaPendente.setAttribute('class', 'tarefa'); //Também é possível
 
+
+    //Utilizando o "onclick"
+    // <div class="not-done" id="${tarefaRecebida.id}" onclick="moverTarefaParaTerminada(${tarefaRecebida.id})"></div>
     liTarefaPendente.innerHTML =
         `
         <div class="not-done" id="${tarefaRecebida.id}"></div>
@@ -20,6 +24,16 @@ function renderizaTarefasPendentes(tarefaRecebida) {
     `
     //Adiciona a lista principal
     tarefasPendentesUl.appendChild(liTarefaPendente);
+}
+
+function moverTarefaParaTerminada(idTarefa) {
+    let escolhaUsuario = confirm("Deseja realmente mover esta tarefa para as 'Tarefas Terminadas' ?");
+    if (escolhaUsuario) {
+        let cookieJwt = getCookie("jwt");
+        //Invoca função de atualização, passando o uuid, o status e o tokenJWT
+        atualizaTarefa(idTarefa, true, cookieJwt); // true -> A tarefa passa de "Pendente" para "Finalizada"
+    }
+
 }
 
 //Captura toda a lista e verifica qual foi o elemento clicado (com o target)
