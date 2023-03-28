@@ -8,29 +8,29 @@ let formularioLogin = document.getElementById("formularioLogin");
 let campoEmailLoginNormalizado;
 let campoSenhaLoginNormalizado;
 
-//Desabilita o botão de salvar ao iniciar a página
+//Desabilita o botão de acessar ao iniciar a página
 botaoAcessarLogin.setAttribute("disabled", true);
 botaoAcessarLogin.innerText = "Bloqueado";
 
 let emailValidacoesOk = false;
 let senhaValidacoesOk = false;
-
-//API
 let loginApiValidacao = true;
 
+/// Objeto JS que representa o login do usuário na API
 const loginUsuario = {
   email: "",
   password: "",
 };
 
-//Ao clicar no botão, executa...
 botaoAcessarLogin.addEventListener("click", function (evento) {
-  
+
   //Verifica se ambos os campos estão preenchidos, normalizados e validados
   if (validaTelaDeLogin()) {
+
     evento.preventDefault();
 
-    //NORMALIZAÇÃO
+    //NORMALIZANDO...
+
     //Retirando os espaços das informações obtidass
     campoEmailLoginNormalizado = retiraEspacosDeUmValorInformado(
       campoEmailLogin.value
@@ -43,15 +43,13 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
     campoEmailLoginNormalizado = converteValorRecebidoParaMinusculo(
       campoEmailLoginNormalizado
     );
-    campoSenhaLoginNormalizado = converteValorRecebidoParaMinusculo(
-      campoSenhaLoginNormalizado
-    );
 
-    //Atribui as informações normalizadas e validadas no Objeto do usuário
+
+    //Atribui as informações normalizadas e validadas no objeto JS do usuário
     loginUsuario.email = campoEmailLoginNormalizado;
     loginUsuario.password = campoSenhaLoginNormalizado;
-    //console.log(loginUsuario);
 
+    /// Converter o objeto JS para objeto JSON (formato aceito pela API no corpo da requisição)
     let loginUsuarioEmJson = JSON.stringify(loginUsuario);
 
     let configuracoesRequisicao = {
@@ -64,11 +62,12 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
     //Habilita o spinner antes de fazer a requisição
     mostrarSpinner();
 
-    //Timeout demonstra uma requisição mais demorada
+    //Timeout apresenta uma requisição mais demorada (para a animação de spinner-loader fazer sentido ao usuário)
     setTimeout(() => {
-      //@@ Utilizando Promisses
+
+      /// Utilizando Promisses
       //Chamando a API
-      fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicao)
+      fetch(`${apiBaseUrl()}/users/login`, configuracoesRequisicao)
         .then((response) => {
           if (response.status == 201) {
             return response.json()
@@ -84,39 +83,23 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
 
     }, 2000);
 
-    //@@ Utilizando Async/Await
-    //loginApi(configuracoesRequisicao);
-
-    //@@ Utilizando Async/Await
-    /*  async function loginApi(configuracoesRequisicaoRecebidas) {
- 
-       try {
-         let respostaApi = await fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configuracoesRequisicaoRecebidas);
-         let respostaJson = await respostaApi.json();
-         console.log(respostaJson);
- 
-       } catch (error) {
-         console.log(error);
-       }
- 
-     } */
-
-    //  Ao obter o sucesso, recebe o json (token) do usuário
+    //  Ao obter o sucesso, recebe o json (token JWT) do usuário
     function loginSucesso(jwtRecebido) {
-      console.log("Jwt recebido");
+
+      console.log("Jwt recebido\n");
       console.log(jwtRecebido);
 
-      //@@@ Após obter o jwt, salva no localStorage ou SessionStorage
-      //sessionStorage.setItem("jwt", jwtRecebido);
-
-      //@@ Setando o token usandio Cookies
+      /// Setando o token usando Cookies
       document.cookie = `jwt=${jwtRecebido}`;
+
+      /// Também é possivel setar utilizando o Storage no navegador.
+      //sessionStorage.setItem("jwt", jwtRecebido);
 
       //Desabilita o Spinner após sucesso no login
       ocultarSpinner();
 
-      //@@Direciona o usuário para a tela de tarefas após sucesso ao logar
-      window.location.href = "tarefas.html"
+      /// Direciona o usuário para a tela de tarefas após sucesso ao logar
+      window.location.href = "tarefas.html";
     }
 
     function loginErro(statusRecebido) {
@@ -129,7 +112,6 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
       //Limpa o campo da senha ao errar o login
       campoSenhaLogin.value = "";
 
-      console.log(statusRecebido);
       if (statusRecebido == 400 || statusRecebido == 404) {
         console.log("Ocorreu algum erro, verifique o e-mail e/ou senha");
         loginValidacao.innerHTML = "Ocorreu algum erro, verifique o e-mail e/ou senha";
@@ -139,22 +121,6 @@ botaoAcessarLogin.addEventListener("click", function (evento) {
         loginApiValidacao = true;
       }
       validaTelaDeLogin();
-      /* switch (statusRecebido) {
-        case 400:
-          console.log("Senha incorreta");
-          break;
-
-        case 404:
-          console.log("Email incorreto");
-          break;
-        case 500:
-          console.log("Problema com o servidor");
-          break;
-          
-          default:
-          console.log("Erro desconhecido, entre em contato com o suporte");
-          break;
-      } */
     }
 
   } else {
@@ -170,7 +136,7 @@ function resetaValidacaoLoginErro() {
   loginApiValidacao = true;
 }
 
-campoEmailLogin.addEventListener("blur", function () {
+campoEmailLogin.addEventListener("keyup", function () {
   let inputEmailValidacao = document.getElementById("inputEmailValidacao");
   campoEmailLogin.style.border = `1px solid #E42323BF`;
 
@@ -198,7 +164,7 @@ campoEmailLogin.addEventListener("blur", function () {
   validaTelaDeLogin();
 });
 
-campoSenhaLogin.addEventListener("blur", function () {
+campoSenhaLogin.addEventListener("keyup", function () {
   let inputPasswordValidacao = document.getElementById(
     "inputPasswordValidacao"
   );

@@ -3,14 +3,14 @@ let tarefasPendentesUl = document.querySelector(".tarefas-pendentes");
 function renderizaTarefasPendentes(tarefaRecebida) {
 
     //Converte a data de TimeStamp Americano, para Date na formatação PT-BR
-    var dataTarefa = new Date(tarefaRecebida.createdAt).toLocaleDateString("pt-BR")
- 
+    let dataTarefa = new Date(tarefaRecebida.createdAt).toLocaleDateString("pt-BR")
+
     let liTarefaPendente = document.createElement('li');
     liTarefaPendente.classList.add("tarefa");
     //liTarefaPendente.setAttribute('class', 'tarefa'); //Outra maneira de setar a classe
 
 
-    //Utilizando o "onclick"
+    //Utilizando o "onclick" (Outra mandeira de implementar)
     // <div class="not-done" id="${tarefaRecebida.id}" onclick="moverTarefaParaTerminada(${tarefaRecebida.id})"></div>
     liTarefaPendente.innerHTML =
         `
@@ -38,9 +38,9 @@ function moverTarefaParaTerminada(idTarefa) {
 //Captura toda a lista e verifica qual foi o elemento clicado (com o target)
 tarefasPendentesUl.addEventListener('click', function (tarefaClicada) {
     tarefaClicada.preventDefault(); //Impede de atualizar a pagina
-    let targetTarefa = tarefaClicada.target;
+    let targetTarefa = tarefaClicada.target; //Captura o elemento clicado em tela
 
-    if (targetTarefa.className == "not-done") { //Garante que seja clicado apenas na DIV a esqueda e não em qualquer lugar do card.
+    if (targetTarefa.className == "not-done") { //Garante que seja clicado apenas na DIV a esquerda e não em qualquer lugar do card.
         let escolhaUsuario = confirm("Deseja realmente mover esta tarefa para as 'Tarefas Terminadas' ?");
         if (escolhaUsuario) {
             let cookieJwt = getCookie("jwt");

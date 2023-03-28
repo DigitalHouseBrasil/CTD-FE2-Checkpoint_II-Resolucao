@@ -1,6 +1,7 @@
-let cookieJwt;
+//Variável global no script
+let cookieJwt; 
 
-///@@@@@@ Executa automaticamente ao iniciar a página
+///Executa automaticamente ao iniciar a página
 onload = () => {
     cookieJwt = getCookie("jwt");
 
@@ -14,15 +15,12 @@ onload = () => {
     }
 }
 
-//@@@@ CARREGA E ALTERA DADOS DO USUÁRIO LOGADO
+/// CARREGA E ALTERA DADOS DO USUÁRIO LOGADO
 //Usando Async-Await
 async function buscaUsuarioNaApi(tokenJwtArmazenado) {
-    //console.log(tokenJwtArmazenado);
-    let urlGetUsuario = "https://ctd-todo-api.herokuapp.com/v1/users/getMe";
 
     let configuracaoRequisicao = {
-        //method: 'GET', //Pode omitir o GET da configuração
-        //body: objetoUsuarioCadastroJson, //Não precisa de body
+        //method: 'GET', //Pode-se omitir o GET da configuração
         headers: {
             'Authorization': `${tokenJwtArmazenado}`, // é OBRIGATORIO passar essa informação
         },
@@ -30,11 +28,10 @@ async function buscaUsuarioNaApi(tokenJwtArmazenado) {
     let resposta;
     let respostaJson
     try {
-        resposta = await fetch(urlGetUsuario, configuracaoRequisicao);
+        resposta = await fetch(`${apiBaseUrl()}/users/getMe`, configuracaoRequisicao);
 
         if (resposta.status == 200) {
             respostaJson = await resposta.json();
-            //console.log(respostaJson);
             alteraDadosUsuarioEmTela(respostaJson);
         } else {
             throw resposta.status
@@ -53,15 +50,14 @@ function alteraDadosUsuarioEmTela(objetoUsuarioRecebido) {
     nomeUsuarioEmTarefas.innerText = `${objetoUsuarioRecebido.firstName} ${objetoUsuarioRecebido.lastName}`;
 }
 
-////@@@@ BUSCANDO TODAS AS TAREFAS DO USUÁRIO LOGADO
+/// BUSCANDO TODAS AS TAREFAS DO USUÁRIO LOGADO
 function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
-    let urlGetTarefas = "https://ctd-todo-api.herokuapp.com/v1/tasks";
     let configuracaoRequisicao = {
         headers: {
             'Authorization': `${tokenJwtArmazenado}`, // é OBRIGATORIO passar essa informação
         },
     };
-    fetch(urlGetTarefas, configuracaoRequisicao).then(
+    fetch(`${apiBaseUrl()}/tasks`, configuracaoRequisicao).then(
         resultado => {
             if (resultado.status == 200) {
                 return resultado.json();
@@ -81,7 +77,7 @@ function buscaAsTarefasDoUsuario(tokenJwtArmazenado) {
 
 function manipulandoTarefasUsuario(listaDeTarefas) {
 
-    //Verifica se o array retornou vazio [] da chamada na API
+    //Verifica se o array retornou vazio [] na chamada na API
     if (listaDeTarefas.length != 0) { //caso são seja vazio....
 
         /* Criar 2 listas para separa as tarefas entre termiandas e completas (Utilizado pela animação do Sketelon) */
@@ -94,7 +90,8 @@ function manipulandoTarefasUsuario(listaDeTarefas) {
 
         /* NOTA:
             - Timeout é utilizado aqui para demonstrar a animação de forma mais eficiente, pois o tempo de retorno da requisição é quase instantaneo.
-         */
+            - Tem como objetivo, melhorar a experiencia do usuário, com a animação de Skeletons
+            */
         setTimeout(() => {
 
             //Ordenando a lista de tarefas pendentes (A - Z)
@@ -117,24 +114,6 @@ function manipulandoTarefasUsuario(listaDeTarefas) {
                 renderizaTarefasConcluidas(tarefa);
             });
 
-            /*  
-                NOTA:
-                    - Outra maneira de realizar a renderização, 
-                    utilizando a lista única retornada pela API que contem ambos os status
-                    
-            //Ordenando a lista recebida da API
-             listaDeTarefas = listaDeTarefas.sort(function (a, b) {
-                 return a.description.localeCompare(b.description);
-             });
- 
-             listaDeTarefas.map(tarefa => {
-                 if (tarefa.completed) {
-                     renderizaTarefasConcluidas(tarefa);
-                 } else {
-                     renderizaTarefasPendentes(tarefa);
-                 }
-             }); */
-
             //Remove as animações do skeleton em ambas as listas
             removerSkeleton(".tarefas-pendentes");
             removerSkeleton(".tarefas-terminadas");
@@ -146,13 +125,15 @@ function manipulandoTarefasUsuario(listaDeTarefas) {
     }
 }
 
-///@@@@@@ CADASTRANDO UMA NOVA TAREFA PARA O USUÁRIO LOGADO
+/// CADASTRANDO UMA NOVA TAREFA PARA O USUÁRIO LOGADO
 let botaoCadastrar = document.getElementById("botaoTarefas");
 
 botaoCadastrar.addEventListener('click', evento => {
     evento.preventDefault();
 
     let descricaoTarefa = document.getElementById('novaTarefa');
+
+    //Este elemento não é previsto no checkpoint II
     let radioGrupo = document.getElementsByName('grupoRadio');
     let radioSelecionado;
     if (descricaoTarefa.value != "") {
@@ -168,21 +149,18 @@ botaoCadastrar.addEventListener('click', evento => {
 
         let objetoTarefaJson = JSON.stringify(objetoTarefa);
 
-        ///@@ Comunicando com a API
-        let endPointCriarNovaTarfa = "https://ctd-todo-api.herokuapp.com/v1/tasks";
-
         let configuracoesRequisicao = {
             method: 'POST',
             body: objetoTarefaJson,
             headers: {
                 // Precisa passar ambas propriedades pro Headers da requisição
-                'Content-type': 'application/json', //responsável elo json no Body
+                'Content-type': 'application/json', //responsável pelo json no Body
                 'Authorization': `${cookieJwt}` //responsável pela autorização (vem do cookie)
             },
         }
 
-        //@@@Chamando a API
-        fetch(endPointCriarNovaTarfa, configuracoesRequisicao)
+        /// Chamando a API
+        fetch(`${apiBaseUrl()}/tasks`, configuracoesRequisicao)
             .then((response) => {
                 if (response.status == 201) {
                     return response.json()
@@ -203,10 +181,9 @@ botaoCadastrar.addEventListener('click', evento => {
     }
 });
 
-///@@@ ATUALIZAR TAREFA, ALETANDO SEU STATUS 
+/// ATUALIZAR TAREFA, ALTERANDO SEU STATUS 
 function atualizaTarefa(idTarefa, status, tokenJwt) {
 
-    let endPointEditarTarefa = `https://ctd-todo-api.herokuapp.com/v1/tasks/${idTarefa}`;
     let configuracoesRequisicao = {
         method: 'PUT',
         body: JSON.stringify(
@@ -221,8 +198,8 @@ function atualizaTarefa(idTarefa, status, tokenJwt) {
         },
     }
 
-    //@@@Chamando a API
-    fetch(endPointEditarTarefa, configuracoesRequisicao)
+    /// Chamando a API
+    fetch(`${apiBaseUrl()}/tasks/${idTarefa}`, configuracoesRequisicao)
         .then((response) => {
             if (response.status == 200) {
                 return response.json()
@@ -239,10 +216,9 @@ function atualizaTarefa(idTarefa, status, tokenJwt) {
         });
 }
 
-///@@@ DELETAR UMA TAREFA POR SEU ID
+/// DELETAR UMA TAREFA POR SEU ID
 function deletarTarefa(idTarefa, tokenJwt) {
 
-    let endPointDeletarTarefa = `https://ctd-todo-api.herokuapp.com/v1/tasks/${idTarefa}`;
     let configuracoesRequisicao = {
         method: 'DELETE',
         headers: {
@@ -250,8 +226,8 @@ function deletarTarefa(idTarefa, tokenJwt) {
         },
     }
 
-    //@@@Chamando a API
-    fetch(endPointDeletarTarefa, configuracoesRequisicao)
+    /// Chamando a API
+    fetch(`${apiBaseUrl()}/tasks/${idTarefa}`, configuracoesRequisicao)
         .then((resposta) => {
             if (resposta.status == 200) {
                 return resposta.json()

@@ -223,10 +223,8 @@ z-index: 20; */
   width: 80%;
   margin: 0 10%;
   padding: 1em;
-  background-color: white;
   border-radius: .2em;
   box-shadow: 3px 3px 5px lightgrey;
-  border-radius: .2em;
   z-index: 20;
   color: rgb(170, 170, 170);
 }
